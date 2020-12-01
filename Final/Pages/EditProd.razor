@@ -1,0 +1,73 @@
+@page "/EditProd/{CurrentID}"
+@using Final.Data
+@inject FacturaService Service
+@inject ProductoService ServiceP
+@inject PFacturadoService ServiceProductoF
+@inject NavigationManager NavigationManager
+
+<h3>Confirmar la factura</h3>
+<p>De click an Confirmar para validar su factura </p>
+
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <input type="button" class="btn btn-succes" @onclick="@UpdateFactura" value="Confirmar" />
+                <input type="button" class="btn btn-danger" @onclick="@Cancel" value="Cancel" />
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+
+
+@code {
+
+    [Parameter]
+    public string CurrentID { get; set; }
+    Producto product = new Producto();
+
+       List<Factura> facturas = new List<Factura>();
+
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        product = await Task.Run(() => ServiceP.GetProductoById(Convert.ToInt32(CurrentID)));
+                facturas = await Task.Run(() => Service.GetFactura());
+
+
+    }
+
+    protected void UpdateFactura()
+    {
+   foreach(var item in facturas){
+if(item.Nombre_Producto == product.Nombre){
+productoCant += product.Cantidad-item.Cantidad_Prod;
+
+
+}
+
+   }
+
+   
+
+        product.Cantidad = productoCant;
+        ServiceP.UpdateProducto(product);
+        NavigationManager.NavigateTo("ProductoInfo");
+    }
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("FacturaInfo");
+
+    }
+
+    int montoTotal;
+    int productoCant;
+    double itbis;
+}
